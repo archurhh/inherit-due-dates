@@ -1,0 +1,9 @@
+{
+  "extends": "../node_modules/@bike-outliner/extension-kit/api/style/tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "include": [
+    "../src/*/style/**/*"
+  ]
+}

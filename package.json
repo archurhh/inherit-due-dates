@@ -1,0 +1,16 @@
+{
+  "name": "inherit-due-dates",
+  "version": "0.3.55",
+  "description": "Bike 2 extension: tasks inherit their due date from the day they're filed under.",
+  "private": true,
+  "license": "MIT",
+  "author": "Art Currim",
+  "scripts": {
+    "build": "bike-ext build inherit-due-dates",
+    "install-ext": "bike-ext build inherit-due-dates --install",
+    "watch": "bike-ext watch inherit-due-dates"
+  },
+  "devDependencies": {
+    "@bike-outliner/extension-kit": "github:bike-outliner/extension-kit"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "extends": "./node_modules/@bike-outliner/extension-kit/api/tsconfig.json",
+  "files": [],
+  "references": [
+    {
+      "path": "./configs/tsconfig.app.json"
+    },
+    {
+      "path": "./configs/tsconfig.dom.json"
+    },
+    {
+      "path": "./configs/tsconfig.style.json"
+    }
+  ]
+}

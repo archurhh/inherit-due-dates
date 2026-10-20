@@ -1,0 +1,10 @@
+{
+  "extends": "../node_modules/@bike-outliner/extension-kit/api/dom/tsconfig.json",
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "include": [
+    "../node_modules/@bike-outliner/extension-kit/api/dom/globals.d.ts",
+    "../src/*/dom/**/*"
+  ]
+}

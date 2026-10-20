@@ -1,0 +1,9 @@
+{
+  "$schema": "../../node_modules/@bike-outliner/extension-kit/schemas/manifest.schema.json",
+  "description": "Task rows inherit their due date from the nearest thing above them that has one — a dated day-row (Bike's own Calendar panel id when present, works with any day-title format or locale, or a leading YYYY-MM-DD in a hand-typed heading's title otherwise), or a closer parent task/heading that itself carries a due date, so sub-tasks follow whichever due date is nearest and cascade automatically when it changes. A due date you set or clear by hand — even on a task that was previously auto-dated — always wins.",
+  "author": "Art Currim",
+  "version": "0.3.55",
+  "api_version": "0.72.0",
+  "permissions": [],
+  "host_permissions": []
+}
