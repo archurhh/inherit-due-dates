@@ -1,8 +1,9 @@
 # Changelog
 
-## 0.3.6
+## 0.4.0
 
 - Added **Inherit Due Dates: File Tasks Under Due Date**. Select tasks that have a due date and each moves under the day row for that date, then inherits from it. If no date heading exists for a date yet, an alert lists the tasks that weren't moved.
+- Briefly released as 0.3.6, which sorts below 0.3.55 in standard version numbering. Renumbered so updates compare correctly.
 
 ## 0.3.55
 
