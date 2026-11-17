@@ -1,7 +1,8 @@
 {
   "$schema": "../../node_modules/@bike-outliner/extension-kit/schemas/manifest.schema.json",
-  "description": "Task rows inherit their due date from the nearest thing above them that has one — a dated day-row (Bike's own Calendar panel id when present, works with any day-title format or locale, or a leading YYYY-MM-DD in a hand-typed heading's title otherwise), or a closer parent task/heading that itself carries a due date, so sub-tasks follow whichever due date is nearest and cascade automatically when it changes. A due date you set or clear by hand — even on a task that was previously auto-dated — always wins.",
+  "description": "Tasks inherit their due date from the day row or parent task they're filed under",
   "author": "Art Currim",
+  "url": "https://github.com/archurhh/inherit-due-dates",
   "version": "0.4.0",
   "api_version": "0.72.0",
   "permissions": [],
