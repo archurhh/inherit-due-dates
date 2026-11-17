@@ -1,6 +1,6 @@
 {
   "name": "inherit-due-dates",
-  "version": "0.3.55",
+  "version": "0.3.6",
   "description": "Bike 2 extension: tasks inherit their due date from the day they're filed under.",
   "private": true,
   "license": "MIT",

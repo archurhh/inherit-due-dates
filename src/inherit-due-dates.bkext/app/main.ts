@@ -102,6 +102,7 @@ export async function activate(context: AppExtensionContext) {
       'inherit-due-dates:sync-document': syncDocumentCommand,
       'inherit-due-dates:debug-row': debugRowCommand,
       'inherit-due-dates:preview-due-date-tree': previewDueDateTreeCommand,
+      'inherit-due-dates:file-tasks-under-due-date': fileTasksUnderDueDateCommand,
     },
   })
 }
@@ -249,6 +250,97 @@ function previewDueDateTreeCommand(context: CommandContext): boolean {
     title: 'Inherit Due Dates — Preview Due-Date Tree',
     message: lines.join('\n'),
   })
+
+  return true
+}
+
+/**
+ * "Inherit Due Dates: File Tasks Under Due Date" — the reverse of inheritance: for
+ * each selected task that already carries a due date, find the existing
+ * day-row for that date (`findDayRowForDate()`) and move the task there,
+ * as that day's last child.
+ *
+ * After the move, the task's due date matches the day it now sits under,
+ * so the task is handed over to the inheritance rule: it gets the
+ * `INHERITED_ATTRIBUTE` marker (the same hand-over "Adopt Heading Due
+ * Dates" does), and from then on it follows its day-row like any other
+ * inherited task. Only the marker is written here, never `due` itself —
+ * writing `due` would show up in `explicitDueEditRows()` as an outside
+ * edit and immediately drop the marker again. If the task's `due` was a
+ * full timestamp (as Bike's date picker can leave it), the reconcile rule
+ * normalizes it to a plain date in the same transaction.
+ *
+ * A task whose date has no day-row yet is left exactly where it is, and
+ * an alert lists it. Creating day-rows stays Bike's Calendar panel's job.
+ * Selected rows that aren't tasks, or have no due date, are skipped and
+ * reported too. Uses `selection.coverRows`, so a selected task's own
+ * sub-tasks travel with it rather than being filed separately.
+ */
+function fileTasksUnderDueDateCommand(context: CommandContext): boolean {
+  const editor = context.editor
+  const outline = editor?.outline ?? bike.frontmostDocument?.outline
+  const selection = context.selection ?? editor?.selection
+  const rows = selection && selection.coverRows.length > 0 ? selection.coverRows : selection?.rows ?? []
+  const title = 'Inherit Due Dates — File Tasks Under Due Date'
+
+  if (!outline || rows.length === 0) {
+    bike.showAlert({
+      title,
+      message: 'Select one or more tasks that have a due date, then run this command again.',
+    })
+    return true
+  }
+
+  const moves: { task: Row; day: Row; due: string }[] = []
+  const noHeading: string[] = []
+  const noDue: string[] = []
+
+  for (const row of rows) {
+    const due = row.type === 'task' ? row.getAttribute(DUE_ATTRIBUTE)?.slice(0, 10) : undefined
+    if (due === undefined) {
+      noDue.push(`"${row.text.string}"`)
+      continue
+    }
+    const day = findDayRowForDate(outline, due)
+    if (!day) {
+      noHeading.push(`"${row.text.string}" — due ${due}`)
+      continue
+    }
+    moves.push({ task: row, day, due })
+  }
+
+  if (moves.length > 0) {
+    outline.transaction({ label: 'File Tasks Under Due Date' }, () => {
+      for (const { task, day, due } of moves) {
+        // Already under the right day, and nothing nearer gives it a
+        // different date: leave it where it is (it may be deliberately
+        // nested in a section under that day) and just hand it over.
+        const alreadyThere = containerDayRow(task)?.id === day.id && nearestDueSource(task) === due
+        if (!alreadyThere) outline.moveRows([task], day)
+        task.setAttribute(INHERITED_ATTRIBUTE, 'true')
+      }
+    })
+  }
+
+  if (noHeading.length > 0 || noDue.length > 0) {
+    const lines: string[] = []
+    if (noHeading.length > 0) {
+      lines.push(`No date heading exists for these dates yet, so these tasks weren't moved (${noHeading.length}):`)
+      lines.push(...noHeading.map((s) => `  • ${s}`))
+      lines.push('')
+      lines.push("Create the date from Bike's Calendar panel (double-click it), then run this command again.")
+    }
+    if (noDue.length > 0) {
+      if (lines.length > 0) lines.push('')
+      lines.push(`Skipped — not a task, or no due date (${noDue.length}):`)
+      lines.push(...noDue.map((s) => `  • ${s}`))
+    }
+    if (moves.length > 0) {
+      lines.push('')
+      lines.push(`Filed under their date heading: ${moves.length}`)
+    }
+    bike.showAlert({ title, message: lines.join('\n') })
+  }
 
   return true
 }
@@ -422,6 +514,18 @@ function dayRowDate(row: Row): string | undefined {
   }
   if (row.type === 'heading') {
     return row.text.string.match(HEADING_DATE_PATTERN)?.[1]
+  }
+  return undefined
+}
+
+/**
+ * The day-row anywhere in the outline whose date (`dayRowDate()`) exactly
+ * equals `date` (a plain `YYYY-MM-DD`), or undefined if no row currently
+ * names that date. Used by `fileTasksUnderDueDateCommand()`.
+ */
+function findDayRowForDate(outline: Outline, date: string): Row | undefined {
+  for (const row of outline.root.descendants) {
+    if (dayRowDate(row) === date) return row
   }
   return undefined
 }

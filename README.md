@@ -34,10 +34,11 @@ Clearing a date by hand also sticks at first. But an empty task under a dated ro
 
 ## Commands
 
-All three are in the Command Palette.
+All four are in the Command Palette.
 
 - **Inherit Due Dates: Sync Whole Document** fills in or refreshes every inherited date in the document. Run it once after installing, since the extension otherwise only updates rows as you edit them. It's also the catch-all if anything ever looks out of sync.
 - **Inherit Due Dates: Preview Due-Date Tree** shows what will happen before you move a parent task or heading. A parent with an inherited date carries its sub-tasks with it when moved. A parent with a hand-set date carries nothing, not even itself. The two look the same in the outline, so this command tells you which one you have and lists which tasks will follow the move and which are anchored.
+- **Inherit Due Dates: File Tasks Under Due Date** works the other way round: it moves tasks to match their dates. Select tasks that already have a due date and run it, and each one moves under the day row for its date. From then on it inherits that day's date like any other task, so moving it to another day later updates it. If no date heading exists for a task's date yet, the task stays where it is and an alert lists it. Make the day in Bike's Calendar panel, then run the command again. A task already under its matching day isn't moved.
 - **Inherit Due Dates: Debug Selected Row** reports what the extension sees for the selected row: its type and attributes, its hidden id, the day row it's under, and the date it would inherit.
 
 [![The Preview Due-Date Tree command](images/preview.png)](images/preview.png)
@@ -57,7 +58,7 @@ Headings without a date and without a `@due` of their own, like "Errands" or "Re
 
 - Dates go into Bike's standard `@due` attribute as `YYYY-MM-DD`, so the Calendar, saved queries and other extensions see them as ordinary due dates.
 - To tell its own dates from yours, the extension adds one hidden attribute, `inherit-due-dates-auto`, to tasks it dated. It doesn't appear as a badge, in the Attributes settings or in a row's log. Uninstalling leaves the dates and the marker in place.
-- It never reorders, creates or deletes rows.
+- It never creates or deletes rows. It only moves rows when you run File Tasks Under Due Date.
 
 ## Building from source
 
@@ -73,7 +74,7 @@ npm run watch          # rebuilds on every save
 If `install-ext` doesn't land the extension, copy `out/extensions/inherit-due-dates.bkext` into `~/Library/Containers/com.hogbaysoftware.Bike/Data/Library/Application Support/Bike/Extensions/` yourself. After a rebuild, toggle the extension off and on in Extensions Explorer, or relaunch Bike.
 
 - `src/inherit-due-dates.bkext/manifest.json` describes the extension.
-- `src/inherit-due-dates.bkext/app/main.ts` holds everything: the reconcile rule that keeps `@due` in sync, the day-row detection, and the three commands. It's commented throughout.
+- `src/inherit-due-dates.bkext/app/main.ts` holds everything: the reconcile rule that keeps `@due` in sync, the day-row detection, and the four commands. It's commented throughout.
 
 Two settings live at the top of `main.ts`. `DUE_ATTRIBUTE` is the attribute dates are written to. `HEADING_DATE_PATTERN` is how a date is found in a hand-typed heading, if yours aren't titled `YYYY-MM-DD`.
 

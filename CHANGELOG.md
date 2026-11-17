@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.6
+
+- Added **Inherit Due Dates: File Tasks Under Due Date**. Select tasks that have a due date and each moves under the day row for that date, then inherits from it. If no date heading exists for a date yet, an alert lists the tasks that weren't moved.
+
 ## 0.3.55
 
 - Removed the automatic "Mixed due-date outcome" alert added in 0.3.5, keeping only the on-demand Preview Due-Date Tree command. Nothing pops up unless you run a command.
